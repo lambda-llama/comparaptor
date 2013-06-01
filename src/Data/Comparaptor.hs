@@ -1,8 +1,9 @@
+{-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE UnboxedTuples #-}
 {-# LANGUAGE MagicHash #-}
 
-module Data.Comparaptor (safeEq) where
+module Data.Comparaptor (SafeCompare(..)) where
 
 import GHC.Base (realWorld#)
 import GHC.IO (IO(IO))
@@ -16,11 +17,15 @@ import qualified Data.ByteString as StrictByteString
 
 type StrictByteString = StrictByteString.ByteString
 
-safeEq :: StrictByteString -> StrictByteString -> Bool
-safeEq a b = inlinePerformIO $ unsafeUseAsCStringLen a $ \(aptr, alen) ->
-    unsafeUseAsCStringLen b $ \(bptr, blen) -> case alen == blen of
-        True -> safeEq' aptr bptr alen
-        False -> return False
+class SafeCompare a where
+    (=.=) :: a -> a -> Bool
+
+instance SafeCompare StrictByteString where
+    a =.= b = inlinePerformIO $ unsafeUseAsCStringLen a $ \(aptr, alen) ->
+        unsafeUseAsCStringLen b $ \(bptr, blen) -> case alen == blen of
+            True -> safeEq' aptr bptr alen
+            False -> return False
+    {-# INLINE (=.=) #-}
 
 safeEq' :: Ptr CChar -> Ptr CChar -> Int -> IO Bool
 safeEq' aptr bptr alen = do

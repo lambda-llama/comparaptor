@@ -8,7 +8,7 @@ import Test.Framework (Test, testGroup)
 import Test.Framework.Providers.QuickCheck2 (testProperty)
 import Test.QuickCheck (Arbitrary(..))
 
-import Data.Comparaptor (safeEq)
+import Data.Comparaptor (SafeCompare(..))
 
 type StrictByteString = StrictByteString.ByteString
 
@@ -19,7 +19,7 @@ testEq :: StrictByteString -> StrictByteString -> Bool
 testEq a b = expected == res
   where
     expected = a == b
-    res = a `safeEq` b
+    res = a =.= b
 
 tests :: Test
 tests = testGroup "Data.Comparaptor.Tests"

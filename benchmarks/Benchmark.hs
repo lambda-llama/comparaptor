@@ -9,12 +9,12 @@ import Data.ByteString (ByteString, unfoldr, snoc, unpack)
 
 import Criterion.Main (defaultMain, bench, nf)
 
-import Data.Comparaptor (safeEq)
+import Data.Comparaptor (SafeCompare(..))
 
 main :: IO ()
 main = defaultMain
     [ bench "simpleSafeEq" $ nf (simpleSafeEq bs1) bs2
-    , bench "safeEq" $ nf (safeEq bs1) bs2
+    , bench "safeEq" $ nf ((=.=) bs1) bs2
     ]
   where
     bs1 :: ByteString = unfoldr unfoldFunc 100000
