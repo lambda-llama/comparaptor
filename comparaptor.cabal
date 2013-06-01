@@ -1,0 +1,59 @@
+Name:               comparaptor
+Version:            0.0.0
+Synopsis:           Safe comparsions
+Description:        Safe comparsions
+License:            MIT
+License-file:       LICENSE
+Author:             Fedor Gogolev <knsd@knsd.net>
+Maintainer:         Fedor Gogolev <knsd@knsd.net>
+Homepage:           https://github.com/lambda-llama/comparaptor
+Bug-reports:        https://github.com/lambda-llama/comparaptor
+Category:           System
+Stability:          Alpha
+Build-type:         Simple
+Cabal-version:      >= 1.12
+Tested-with:        GHC == 7.6.*
+
+Library
+    Hs-source-dirs:     src
+    Ghc-options:        -Wall -fno-warn-orphans
+    Default-language:   Haskell2010
+
+    Build-depends:
+        base                       == 4.6.*
+      , bytestring                 == 0.10.*
+
+    Exposed-modules:    Data.Comparaptor
+
+Benchmark comparaptor-benchmark
+    Main-is:            Benchmark.hs
+    Hs-source-dirs:     src, benchmarks
+    Ghc-options:        -Wall -fno-warn-orphans -O2 -fllvm -optlo-O3 -optlo-inline -optlo-std-compile-opts
+    Default-language:   Haskell2010
+    Type:               exitcode-stdio-1.0
+
+    Build-depends:
+        base                        == 4.6.*
+      , bytestring                  == 0.10.*
+
+      , criterion                   == 0.6.*
+
+Test-suite comparaptor-tests
+    Main-is:            Tests.hs
+    Hs-source-dirs:     src, tests
+    Ghc-options:        -Wall -fno-warn-orphans
+    Default-language:   Haskell2010
+    Type:               exitcode-stdio-1.0
+
+    Build-depends:
+        base                       == 4.6.*
+      , bytestring                 == 0.10.*
+      , comparaptor
+
+      , test-framework             == 0.8.*
+      , test-framework-quickcheck2 == 0.3.*
+      , QuickCheck                 == 2.5.*
+
+Source-repository head
+    Type:             git
+    Location:         https://github.com/lambda-llama/comparaptor
