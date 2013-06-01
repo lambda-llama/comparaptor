@@ -20,12 +20,16 @@ type StrictByteString = StrictByteString.ByteString
 ------------------------------------------------------------------------------
 -- * Class
 
+-- | This class provide '(=.=)' equality function that should compare two 'a'
+-- without timing attacks vulnerabilities.
 class SafeEq a where
     (=.=) :: a -> a -> Bool
 
 ------------------------------------------------------------------------------
 -- * Instances
 
+-- | O(1) for 'StrictByteString.ByteString's with different length and O(n) for
+-- 'StrictByteString.ByteString's with same length.
 instance SafeEq StrictByteString where
     a =.= b = inlinePerformIO $ unsafeUseAsCStringLen a $ \(aptr, alen) ->
         unsafeUseAsCStringLen b $ \(bptr, blen) -> case alen == blen of
@@ -36,22 +40,38 @@ instance SafeEq StrictByteString where
 ------------------------------------------------------------------------------
 -- * Helper functions
 
-safeEq' :: Ptr CChar -> Ptr CChar -> Int -> IO Bool
+-- | Compare two byte arrays with given length. Assume that byte arrays
+-- has same length otherwise segmentation fault is quite possible.
+--
+-- This function works in two different stages:
+--
+--   * Compare first part of bytestring with 'CULong', so we need to
+--     make much less readings from memory.
+--   * Compare rest with 'CChar'
+safeEq' :: Ptr CChar -- ^ Pointer to first byte array
+        -> Ptr CChar -- ^ Pointer to second byte array
+        -> Int       -- ^ Byte arrays size
+        -> IO Bool   -- ^ Is byte arrays equals
 safeEq' aptr bptr alen = do
-    ini <- compareBytes captr cbptr inisize 0 0
-    las <- compareBytes aptr bptr lassize 0 (inisize * 8)
-    return $ (fromIntegral ini + las) == 0
+    ini <- compareBytes captr cbptr inisize 0
+    las <- compareBytes aptr bptr lassize (inisize * 8)
+    return $ ini && las
   where
     (inisize, lassize) = alen `quotRem` 8
     captr :: Ptr CULong = castPtr aptr
     cbptr :: Ptr CULong = castPtr bptr
 {-# INLINE safeEq' #-}
 
-compareBytes :: (Bits a, Storable a) => Ptr a -> Ptr a -> Int -> a -> Int -> IO a
-compareBytes aptr bptr limit = go
+compareBytes :: (Num a, Bits a, Storable a)
+             => Ptr a   -- ^ Pointer to first byte array
+             -> Ptr a   -- ^ Pointer to second byte array
+             -> Int     -- ^ Maxumum number of readings 'a' in byte arrays
+             -> Int     -- ^ Offset in numbers of 'a' in byte arrays
+             -> IO Bool -- ^ Is byte arrays equals
+compareBytes aptr bptr limit = go 0
   where
     go acc index
-        | index >= limit = return acc
+        | index >= limit = return $ acc == 0
         | otherwise = do
             x <- peekElemOff aptr index
             y <- peekElemOff bptr index
