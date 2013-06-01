@@ -2,9 +2,9 @@ module Main (main) where
 
 import Test.Framework (defaultMain)
 
-import qualified Data.Comparaptor.Tests
+import qualified Data.Comparaptor.Eq.Tests
 
 main :: IO ()
 main = defaultMain
-    [ Data.Comparaptor.Tests.tests
+    [ Data.Comparaptor.Eq.Tests.tests
     ]

@@ -9,7 +9,7 @@ import Data.ByteString (ByteString, unfoldr, snoc, unpack)
 
 import Criterion.Main (defaultMain, bench, nf)
 
-import Data.Comparaptor (SafeCompare(..))
+import Data.Comparaptor (SafeEq(..))
 
 main :: IO ()
 main = defaultMain
