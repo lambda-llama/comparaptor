@@ -1,6 +1,7 @@
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE UnboxedTuples #-}
+{-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE MagicHash #-}
 
 module Data.Comparaptor.Eq (SafeEq(..)) where
@@ -27,6 +28,33 @@ class SafeEq a where
 
 ------------------------------------------------------------------------------
 -- * Instances
+
+------------------------------------------------------------------------------
+-- ** Simple instances
+
+instance SafeEq () where
+    () =.= () = True
+    {-# INLINE (=.=) #-}
+
+instance SafeEq Bool where
+    True =.= True   = True
+    False =.= False = True
+    _ =.= _         = False
+    {-# INLINE (=.=) #-}
+
+------------------------------------------------------------------------------
+-- ** Tuple instances
+
+instance (SafeEq a, SafeEq b) => SafeEq (a, b) where
+    (a, b) =.= (a', b') = a =.= a' &&! b =.= b'
+    {-# INLINE (=.=) #-}
+
+instance (SafeEq a, SafeEq b, SafeEq c) => SafeEq (a, b, c) where
+    (a, b, c) =.= (a', b', c') = a =.= a' &&! b =.= b' &&! c =.= c'
+    {-# INLINE (=.=) #-}
+
+------------------------------------------------------------------------------
+-- ** Not so simple instances
 
 -- | O(1) for 'StrictByteString.ByteString's with different length and O(n) for
 -- 'StrictByteString.ByteString's with same length.
@@ -82,3 +110,9 @@ compareBytes aptr bptr limit = go 0
 inlinePerformIO :: IO a -> a
 inlinePerformIO (IO m) = case m realWorld# of (# _, r #) -> r
 {-# INLINE inlinePerformIO #-}
+
+infixr 3 &&!
+
+(&&!) :: Bool -> Bool -> Bool
+(&&!) True !x  = x
+(&&!) False !_ = False
