@@ -28,7 +28,7 @@ Library
 Benchmark comparaptor-benchmark
     Main-is:            Benchmark.hs
     Hs-source-dirs:     src, benchmarks
-    Ghc-options:        -Wall -fno-warn-orphans -O2 -fllvm -optlo-O3 -optlo-inline -optlo-std-compile-opts
+    Ghc-options:        -Wall -fno-warn-orphans -O2
     Default-language:   Haskell2010
     Type:               exitcode-stdio-1.0
 
