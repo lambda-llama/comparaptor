@@ -10,7 +10,7 @@ import GHC.IO (IO(IO))
 import Data.Bits (Bits, (.|.), xor)
 import Data.ByteString.Unsafe (unsafeUseAsCStringLen)
 import Foreign(Ptr, castPtr)
-import Foreign.C.Types (CULong(..))
+import Foreign.C.Types (CULong(..), CChar)
 import Foreign.Storable (Storable, peekElemOff)
 import qualified Data.ByteString as StrictByteString
 
@@ -22,7 +22,7 @@ safeEq a b = inlinePerformIO $ unsafeUseAsCStringLen a $ \(aptr, alen) ->
         True -> safeEq' aptr bptr alen
         False -> return False
 
-safeEq' :: (Num a, Bits a, Storable a) => Ptr a -> Ptr a -> Int -> IO Bool
+safeEq' :: Ptr CChar -> Ptr CChar -> Int -> IO Bool
 safeEq' aptr bptr alen = do
     ini <- compareBytes captr cbptr inisize 0 0
     las <- compareBytes aptr bptr lassize 0 (inisize * 8)
