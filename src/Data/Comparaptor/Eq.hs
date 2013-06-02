@@ -1,22 +1,15 @@
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE UnboxedTuples #-}
-{-# LANGUAGE BangPatterns #-}
-{-# LANGUAGE MagicHash #-}
 
 module Data.Comparaptor.Eq (SafeEq(..)) where
-
-import GHC.Base (realWorld#)
-import GHC.IO (IO(IO))
 
 import Data.Bits (Bits, (.|.), xor)
 import Data.ByteString.Unsafe (unsafeUseAsCStringLen)
 import Foreign(Ptr, castPtr)
 import Foreign.C.Types (CULong(..), CChar)
 import Foreign.Storable (Storable, peekElemOff)
-import qualified Data.ByteString as StrictByteString
 
-type StrictByteString = StrictByteString.ByteString
+import Data.Comparaptor.Utils (StrictByteString, inlinePerformIO, (&&!))
 
 ------------------------------------------------------------------------------
 -- * Class
@@ -106,14 +99,3 @@ compareBytes aptr bptr limit = go 0
             go (acc .|. xor x y) (index + 1)
     {-# INLINE go #-}
 {-# INLINE compareBytes #-}
-
-inlinePerformIO :: IO a -> a
-inlinePerformIO (IO m) = case m realWorld# of (# _, r #) -> r
-{-# INLINE inlinePerformIO #-}
-
-infixr 3 &&!
-
--- | Strict boolean @and@, regardless of is False first argument evaluates the second.
-(&&!) :: Bool -> Bool -> Bool
-(&&!) True !x  = x
-(&&!) False !_ = False
