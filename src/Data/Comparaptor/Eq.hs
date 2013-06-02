@@ -83,7 +83,7 @@ safeEq' :: Ptr CChar -- ^ Pointer to first byte array
 safeEq' aptr bptr alen = do
     ini <- compareBytes captr cbptr inisize 0
     las <- compareBytes aptr bptr lassize (inisize * 8)
-    return $ ini && las
+    return $ ini &&! las
   where
     (inisize, lassize) = alen `quotRem` 8
     captr :: Ptr CULong = castPtr aptr
@@ -113,6 +113,7 @@ inlinePerformIO (IO m) = case m realWorld# of (# _, r #) -> r
 
 infixr 3 &&!
 
+-- | Strict boolean @and@, regardless of is False first argument evaluates the second.
 (&&!) :: Bool -> Bool -> Bool
 (&&!) True !x  = x
 (&&!) False !_ = False
