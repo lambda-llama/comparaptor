@@ -24,6 +24,8 @@ Library
       , bytestring                 == 0.10.* || == 0.9.*
 
     Exposed-modules:    Data.Comparaptor
+    C-sources: cbits/comparaptor.c
+    Include-dirs: cbits
 
 Benchmark comparaptor-benchmark
     Main-is:            Benchmark.hs
@@ -31,6 +33,8 @@ Benchmark comparaptor-benchmark
     Ghc-options:        -Wall -fno-warn-orphans -O2
     Default-language:   Haskell2010
     Type:               exitcode-stdio-1.0
+    C-sources: cbits/comparaptor.c
+    Include-dirs: cbits
 
     Build-depends:
         base                        == 4.6.*  || == 4.5.*
@@ -44,6 +48,8 @@ Test-suite comparaptor-tests
     Ghc-options:        -Wall -fno-warn-orphans
     Default-language:   Haskell2010
     Type:               exitcode-stdio-1.0
+    C-sources: cbits/comparaptor.c
+    Include-dirs: cbits
 
     Build-depends:
         base                       == 4.6.*  || == 4.5.*
