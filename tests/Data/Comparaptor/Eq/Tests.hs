@@ -1,6 +1,9 @@
 {-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE CPP #-}
 
 module Data.Comparaptor.Eq.Tests (tests) where
+
+#define TEST(TYPE) testProperty "=.= TYPE" (testEq :: TYPE -> TYPE -> Bool)
 
 import qualified Data.ByteString as StrictByteString
 
@@ -23,5 +26,9 @@ testEq a b = expected == res
 
 tests :: Test
 tests = testGroup "Data.Comparaptor.Eq.Tests"
-    [ testProperty "test Eq" (testEq :: StrictByteString -> StrictByteString -> Bool)
+    [ TEST(())
+    , TEST(Bool)
+    , TEST((Bool, Bool))
+    , TEST((Bool, (), Bool))
+    , TEST(StrictByteString)
     ]
