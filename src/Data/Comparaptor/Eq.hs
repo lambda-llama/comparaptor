@@ -74,9 +74,8 @@ safeEq' :: Ptr CChar -- ^ Pointer to first byte array
         -> Int       -- ^ Byte arrays size
         -> IO Bool   -- ^ Is byte arrays equals
 safeEq' aptr bptr alen = do
-    ini <- compareBytes captr cbptr inisize 0
-    las <- compareBytes aptr bptr lassize (inisize * 8)
-    return $ ini &&! las
+    ini <- fmap fromIntegral $ compareBytes captr cbptr inisize 0 0
+    fmap (== 0) $ compareBytes aptr bptr lassize ini (inisize * 8)
   where
     (inisize, lassize) = alen `quotRem` 8
     captr :: Ptr CULong = castPtr aptr
@@ -87,12 +86,13 @@ compareBytes :: (Num a, Bits a, Storable a)
              => Ptr a   -- ^ Pointer to first byte array
              -> Ptr a   -- ^ Pointer to second byte array
              -> Int     -- ^ Maxumum number of readings 'a' in byte arrays
+             -> a       -- ^ Initial value
              -> Int     -- ^ Offset in numbers of 'a' in byte arrays
-             -> IO Bool -- ^ Is byte arrays equals
-compareBytes aptr bptr limit = go 0
+             -> IO a    -- ^ 0 if byte arrays equals
+compareBytes aptr bptr limit = go
   where
     go acc index
-        | index >= limit = return $ acc == 0
+        | index >= limit = return acc
         | otherwise = do
             x <- peekElemOff aptr index
             y <- peekElemOff bptr index
