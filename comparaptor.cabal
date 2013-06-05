@@ -21,6 +21,8 @@ Library
 
     Build-depends:
         base                       == 4.6.*  || == 4.5.*
+      , ghc-prim                   == 0.3.*
+      , integer-gmp                == 0.5.*
       , bytestring                 == 0.10.* || == 0.9.*
 
     Exposed-modules:    Data.Comparaptor
@@ -37,10 +39,12 @@ Benchmark comparaptor-benchmark
     Include-dirs: cbits
 
     Build-depends:
-        base                        == 4.6.*  || == 4.5.*
-      , bytestring                  == 0.10.* || == 0.9.*
+        base                       == 4.6.*  || == 4.5.*
+      , ghc-prim                   == 0.3.*
+      , integer-gmp                == 0.5.*
+      , bytestring                 == 0.10.* || == 0.9.*
 
-      , criterion                   == 0.6.*
+      , criterion                  == 0.6.*
 
 Test-suite comparaptor-tests
     Main-is:            Tests.hs
@@ -53,6 +57,8 @@ Test-suite comparaptor-tests
 
     Build-depends:
         base                       == 4.6.*  || == 4.5.*
+      , ghc-prim                   == 0.3.*
+      , integer-gmp                == 0.5.*
       , bytestring                 == 0.10.* || == 0.9.*
       , comparaptor
 

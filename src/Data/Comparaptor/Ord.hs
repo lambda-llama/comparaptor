@@ -24,7 +24,7 @@ instance SafeOrd StrictByteString where
       where
         report alen blen res
           | res < 0   = LT
-          | res == 0  = alen `compare` blen
+          | res == 0  = alen `compare` blen  -- FIXME: alen `safeCompare` blen
           | otherwise = GT
 
 foreign import ccall "comparaptor.h safe_memcmp"

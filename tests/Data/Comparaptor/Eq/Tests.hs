@@ -31,4 +31,5 @@ tests = testGroup "Data.Comparaptor.Eq.Tests"
     , TEST((Bool, Bool))
     , TEST((Bool, (), Bool))
     , TEST(StrictByteString)
+    , TEST(Integer)
     ]
