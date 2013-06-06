@@ -63,6 +63,7 @@ instance SafeEq StrictByteString where
             False -> return False
     {-# INLINE (=.=) #-}
 
+-- | O(1) for 'Integer's with different length and O(n) for 'Integer's with same length.
 instance SafeEq Integer where
     (S# a) =.= (S# b) = a ==# b
     (J# _ _) =.= (S# _) = False
