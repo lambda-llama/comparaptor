@@ -5,12 +5,12 @@
 module Data.Comparaptor.Eq (SafeEq(..)) where
 
 import GHC.Exts (Int(I#), Ptr(..))
-import GHC.Prim (byteArrayContents#, (==#))
+import GHC.Prim (byteArrayContents#, (==#), (*#))
 import GHC.Integer.GMP.Internals (Integer(S#, J#))
 
 import Data.Bits (Bits, (.|.), xor)
 import Data.ByteString.Unsafe (unsafeUseAsCStringLen)
-import Foreign(Ptr, castPtr)
+import Foreign(castPtr)
 import Foreign.C.Types (CULong(..), CChar)
 import Foreign.Storable (Storable, peekElemOff)
 
@@ -65,11 +65,9 @@ instance SafeEq StrictByteString where
 
 instance SafeEq Integer where
     (S# a) =.= (S# b) = a ==# b
-    (J# alen a) =.= (S# b) = error "Not implemented"
-    (S# b) =.= (J# alen a) = error "Not implemented"
-    (J# alen a) =.= (J# blen b) = case alen ==# blen of
-            True -> inlinePerformIO $ safeEq' aptr bptr $ I# alen
-            False -> False
+    (J# _ _) =.= (S# _) = False
+    (S# _) =.= (J# _ _) = False
+    (J# alen a) =.= (J# blen b) = alen ==# blen &&! (inlinePerformIO $ safeEq' aptr bptr $ I# (alen *# 8#))
       where
         aaddr = byteArrayContents# a
         baddr = byteArrayContents# b
